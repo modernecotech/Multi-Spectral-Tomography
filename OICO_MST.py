@@ -25,11 +25,15 @@ video_capture_2.set(3,2592)
 video_capture_2.set(4,1944)
 
 time.sleep(2) #give the cameras time to make the resolution setting
+ser.write(0)
+
+cv2.namedWindow("Cam 1", cv2.WINDOW_NORMAL)
+cv2.resizeWindow("Cam 1", 600,600)
 
 while True:
     # Capture frame-by-frame
     ret1, frame1 = video_capture_1.read() #grayscale video streamed
-    ret2, frame2 = video_capture_2.grab() #colour video only captured on trigger
+    ret2, frame2 = video_capture_2.read() #colour video only captured on trigger
 
     if (ret1):
         # Display the resulting frame
