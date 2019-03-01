@@ -25,7 +25,7 @@ video_capture_2.set(3,2592)
 video_capture_2.set(4,1944)
 
 time.sleep(2) #give the cameras time to make the resolution setting
-ser.write(0)
+ser.write(str.encode('0')) #start the IR 770nm on arduino
 
 cv2.namedWindow("Cam 1", cv2.WINDOW_NORMAL)
 cv2.resizeWindow("Cam 1", 600,600)
@@ -56,13 +56,30 @@ layout = [
 
 window = sg.Window('OICO MST').Layout(layout)
 
+def ImageCapture():
+    ser.write(str.encode('2')) #start flash sequence
+    eyeselection = "L" if values['_LeftEye_'] is True else "R"
+    filenameStart=(values['_storageFolder_'] + '/' + values['PatientName'] + values['PatientID'] + eyeselection)
+    ret1, frame1 = video_capture_1.read()
+    grayscale1 = cv2.cvtColor(frame1, cv2.COLOR_BGR2GRAY)
+    cv2.imwrite(filenameStart + '770.png',grayscale1)
+    ret1, frame1 = video_capture_1.read()
+    grayscale1 = cv2.cvtColor(frame1, cv2.COLOR_BGR2GRAY)
+    cv2.imwrite(filenameStart + '850nm.png',grayscale1)
+    ret1, frame1 = video_capture_1.read()
+    grayscale1 = cv2.cvtColor(frame1, cv2.COLOR_BGR2GRAY)
+    cv2.imwrite(filenameStart + '810nm.png',grayscale1)
+    ret2, frame2 = video_capture_2.read()
+    cv2.imwrite(filenameStart + '520nm.png',frame2)    
+
+
+
 
 while True:
     # Capture frame-by-frame
     ret1, frame1 = video_capture_1.read() #grayscale video streamed
     ret2, frame2 = video_capture_2.read() #colour video only captured 
     event, values = window.ReadNonBlocking() #
-
     if (ret1):
         # Display the resulting frame
         grayscale1 = cv2.cvtColor(frame1, cv2.COLOR_BGR2GRAY)
@@ -81,10 +98,12 @@ while True:
         sg.PopupQuickMessage("The OICO MST was developed and made by Ophthalmic Instrument Company www.oico.co.uk")
 
     if event == 'Capture Image':
-        sg.Popup('capture image')
+        ImageCapture()
 
 # When everything is done, release the capture
 video_capture_1.release()
 video_capture_2.release()
 cv2.destroyAllWindows()
+ser.write(str.encode('1')) #switch off all LEDs
+ser.close()
 window.Close()
