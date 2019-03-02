@@ -37,6 +37,16 @@ menu_def=[
     ['Help','About']
 ]
 
+illumination_frame=[
+    [sg.Text('',size=(8,0)),sg.Radio('',"RADIO2",key='a')],
+    [sg.Text('',size=(3,0)),sg.Radio('',"RADIO2",key='l'),sg.Text('',size=(4,0)),sg.Radio('',"RADIO2",key='b')],
+    [sg.Text('',size=(1,0)),sg.Radio('',"RADIO2",key='k'),sg.Text('',size=(8,0)),sg.Radio('',"RADIO2",key='c')],
+    [sg.Radio('',"RADIO2",key='j'),sg.Text('',size=(3,0)),sg.Radio('OFF',"RADIO2",key='m',default=True),sg.Text('',size=(1,0)),sg.Radio('',"RADIO2",key='d')],
+    [sg.Text('',size=(1,0)),sg.Radio('',"RADIO2",key='i'),sg.Text('',size=(8,0)),sg.Radio('',"RADIO2",key='e')],
+    [sg.Text('',size=(3,0)),sg.Radio('',"RADIO2",key='h'),sg.Text('',size=(4,0)),sg.Radio('',"RADIO2",key='f')],
+    [sg.Text('',size=(8,0)),sg.Radio('',"RADIO2",key='g')],
+]
+
 layout = [
     [sg.Menu(menu_def,tearoff=True)],
     [sg.Text('Ophthalmic Instrument Company MST', size=(40,1), justification='center',font=('Helvetica','20'))],
@@ -49,6 +59,8 @@ layout = [
     [sg.Text('Patient Date of Birth',size=(15,1)),sg.Input(key='_dob_'),sg.CalendarButton('date of birth','_dob_')],
     [sg.Text('Eye Selection',size=(15,1)),sg.Radio('Left Eye',"RADIO1",default=True,key='_LeftEye_'),sg.Radio('Right Eye',"RADIO1",key='_RightEye_')],
     [sg.VerticalSeparator()],
+    [sg.Frame('External Fixation', illumination_frame, font="Any 14", title_color='blue')],
+    [sg.VerticalSeparator()],
     [sg.Button(button_text='Capture Image')],
 
     [sg.Quit()]
@@ -58,8 +70,9 @@ window = sg.Window('OICO MST').Layout(layout)
 
 def ImageCapture():
     ser.write(str.encode('2')) #start flash sequence
+    t=time.strftime("%H%M%S")
     eyeselection = "L" if values['_LeftEye_'] is True else "R"
-    filenameStart=(values['_storageFolder_'] + '/' + values['PatientName'] + values['PatientID'] + eyeselection)
+    filenameStart=(values['_storageFolder_'] + '/' + values['PatientName'] + values['PatientID'] + eyeselection + "_" + t)
     ret1, frame1 = video_capture_1.read()
     grayscale1 = cv2.cvtColor(frame1, cv2.COLOR_BGR2GRAY)
     cv2.imwrite(filenameStart + '770.png',grayscale1)
@@ -80,6 +93,7 @@ while True:
     ret1, frame1 = video_capture_1.read() #grayscale video streamed
     ret2, frame2 = video_capture_2.read() #colour video only captured 
     event, values = window.ReadNonBlocking() #
+    
     if (ret1):
         # Display the resulting frame
         grayscale1 = cv2.cvtColor(frame1, cv2.COLOR_BGR2GRAY)
@@ -99,6 +113,46 @@ while True:
 
     if event == 'Capture Image':
         ImageCapture()
+    
+    if values['a'] is True:
+        ser.write(str.encode("a"))
+
+    if values['b'] is True:
+        ser.write(str.encode("b"))
+
+    if values['c'] is True:
+        ser.write(str.encode("c"))
+
+    if values['d'] is True:
+        ser.write(str.encode("d"))
+
+    if values['e'] is True:
+        ser.write(str.encode("e"))
+
+    if values['f'] is True:
+        ser.write(str.encode("f"))
+
+    if values['g'] is True:
+        ser.write(str.encode("g"))
+
+    if values['h'] is True:
+        ser.write(str.encode("h"))
+
+    if values['i'] is True:
+        ser.write(str.encode("i"))
+
+    if values['j'] is True:
+        ser.write(str.encode("j"))
+
+    if values['k'] is True:
+        ser.write(str.encode("k"))
+
+    if values['l'] is True:
+        ser.write(str.encode("l"))
+        
+    if values['m'] is True:
+        ser.write(str.encode("m"))
+
 
 # When everything is done, release the capture
 video_capture_1.release()
