@@ -1,6 +1,6 @@
 #Main Graphical User Interface for the Multi Spectral Tomography system
 
-import PySimpleGUI as sg
+import PySimpleGUIQt as sg
 import sys
 import serial
 from serial.tools.list_ports import comports
@@ -24,11 +24,8 @@ video_capture_1.set(4,1080)
 video_capture_2.set(3,2592)
 video_capture_2.set(4,1944)
 
-time.sleep(2) #give the cameras time to make the resolution setting
+time.sleep(1) #give the cameras time to make the resolution setting
 ser.write(str.encode('0')) #start the IR 770nm on arduino
-
-cv2.namedWindow("Cam 1", cv2.WINDOW_NORMAL)
-cv2.resizeWindow("Cam 1", 600,600)
 
 
 #starting up the GUI
@@ -49,7 +46,7 @@ illumination_frame=[
 
 layout = [
     [sg.Menu(menu_def,tearoff=True)],
-    [sg.Text('Ophthalmic Instrument Company MST', size=(40,1), justification='center',font=('Helvetica','20'))],
+    [sg.Text('Ophthalmic Instrument Company MST', size=(40,1), justification='center',font=('Helvetica','16'))],
     [sg.Text('Folder to store images',size=(15,1)), sg.Input(key='_storageFolder_'), sg.FolderBrowse()],
     [sg.Text('Operator Name',size=(15,1)),sg.InputText(key='operatorName')],
     [sg.Text('Operator ID',size=(15,1)),sg.InputText(key='operatorID')],
@@ -59,14 +56,18 @@ layout = [
     [sg.Text('Patient Date of Birth',size=(15,1)),sg.Input(key='_dob_'),sg.CalendarButton('date of birth','_dob_')],
     [sg.Text('Eye Selection',size=(15,1)),sg.Radio('Left Eye',"RADIO1",default=True,key='_LeftEye_'),sg.Radio('Right Eye',"RADIO1",key='_RightEye_')],
     [sg.VerticalSeparator()],
-    [sg.Frame('External Fixation', illumination_frame, font="Any 14", title_color='blue')],
-    [sg.VerticalSeparator()],
+ #   [sg.Frame('External Fixation', illumination_frame, font="Any 14", title_color='blue')],
+    [sg.Text("External Fixation LEDs")],
+    [sg.Dial((1,13),key="ext",enable_events=True,size=(150,150))],
+    [sg.Text("OFF")],
     [sg.Button(button_text='Capture Image')],
-
+    [sg.VerticalSeparator()],
     [sg.Quit()]
 ]
 
 window = sg.Window('OICO MST').Layout(layout)
+
+
 
 def ImageCapture():
     ser.write(str.encode('2')) #start flash sequence
@@ -92,11 +93,13 @@ while True:
     # Capture frame-by-frame
     ret1, frame1 = video_capture_1.read() #grayscale video streamed
     ret2, frame2 = video_capture_2.read() #colour video only captured 
-    event, values = window.ReadNonBlocking() #
+    event, values = window._ReadNonBlocking() #
     
     if (ret1):
         # Display the resulting frame
         grayscale1 = cv2.cvtColor(frame1, cv2.COLOR_BGR2GRAY)
+        cv2.namedWindow("Cam 1", cv2.WINDOW_NORMAL)
+        cv2.resizeWindow("Cam 1", 800,600)
         cv2.imshow('Cam 1', grayscale1)
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
@@ -114,44 +117,44 @@ while True:
     if event == 'Capture Image':
         ImageCapture()
     
-    if values['a'] is True:
+    if values['ext'] == '1':
+        ser.write(str.encode("m"))
+
+    if values['ext'] == '2':
         ser.write(str.encode("a"))
 
-    if values['b'] is True:
+    if values['ext'] == '3':
         ser.write(str.encode("b"))
 
-    if values['c'] is True:
+    if values['ext'] == '4':
         ser.write(str.encode("c"))
 
-    if values['d'] is True:
+    if values['ext'] == '5':
         ser.write(str.encode("d"))
 
-    if values['e'] is True:
+    if values['ext'] == '6':
         ser.write(str.encode("e"))
 
-    if values['f'] is True:
+    if values['ext'] == '7':
         ser.write(str.encode("f"))
 
-    if values['g'] is True:
+    if values['ext'] == '8':
         ser.write(str.encode("g"))
 
-    if values['h'] is True:
+    if values['ext'] == '9':
         ser.write(str.encode("h"))
 
-    if values['i'] is True:
+    if values['ext'] == '10':
         ser.write(str.encode("i"))
 
-    if values['j'] is True:
+    if values['ext'] == '11':
         ser.write(str.encode("j"))
 
-    if values['k'] is True:
+    if values['ext'] == '12':
         ser.write(str.encode("k"))
-
-    if values['l'] is True:
-        ser.write(str.encode("l"))
         
-    if values['m'] is True:
-        ser.write(str.encode("m"))
+    if values['ext'] == '13':
+        ser.write(str.encode("l"))
 
 
 # When everything is done, release the capture
