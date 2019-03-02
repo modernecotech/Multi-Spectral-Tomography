@@ -7,4 +7,4 @@ The system has been tested for shallow depth imaging in retinal tissue. Up to 1.
 
 It could be modified to image skin or other tissue if the incoherent low power LEDs are replaced by lasers of the same wavelength.
 
-![Alt text](screenshot.jpg?raw=true "Basic User Interface")
+![Alt text](screenshot.png?raw=true "Basic User Interface")
