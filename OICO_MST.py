@@ -7,6 +7,7 @@ from serial.tools.list_ports import comports
 import cv2
 import threading
 import time
+from configparser import SafeConfigParser
 
 #Setting up the arduino to the first com port.
 serialList = [p.device for p in comports()]
@@ -26,6 +27,10 @@ video_capture_2.set(4,1944)
 
 time.sleep(1) #give the cameras time to make the resolution setting
 ser.write(str.encode('0')) #start the IR 770nm on arduino
+
+#read in the saved configuration details for default folder, operator, etc
+config=SafeConfigParser()
+config.read('config.ini')
 
 
 #starting up the GUI
@@ -66,6 +71,7 @@ layout = [
 ]
 
 window = sg.Window('OICO MST').Layout(layout)
+window.Location=(0,0)
 
 
 
@@ -88,7 +94,6 @@ def ImageCapture():
 
 
 
-
 while True:
     # Capture frame-by-frame
     ret1, frame1 = video_capture_1.read() #grayscale video streamed
@@ -99,7 +104,7 @@ while True:
         # Display the resulting frame
         grayscale1 = cv2.cvtColor(frame1, cv2.COLOR_BGR2GRAY)
         cv2.namedWindow("Cam 1", cv2.WINDOW_NORMAL)
-        cv2.resizeWindow("Cam 1", 800,600)
+        cv2.resizeWindow("Cam 1", 1000,600)
         cv2.imshow('Cam 1', grayscale1)
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
