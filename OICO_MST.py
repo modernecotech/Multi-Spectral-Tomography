@@ -31,9 +31,9 @@ ser.write(str.encode('0')) #start the IR 770nm on arduino
 #read in the saved configuration details for default folder, operator, etc
 config=SafeConfigParser()
 config.read('config.ini')
-defaultOperatorName = config[DEFAULT][OperatorName]
-defaultOperatorID = config[DEFAULT][OperatorID]
-defaultFolder = config[DEFAULT][DefaultFolder]
+defaultOperatorName = config['DEFAULT']['OperatorName']
+defaultOperatorID = config['DEFAULT']['OperatorID']
+defaultFolder = config['DEFAULT']['DefaultFolder']
 
 #starting up the GUI
 menu_def=[
@@ -167,6 +167,11 @@ while True:
 # When everything is done, release the capture
 video_capture_1.release()
 video_capture_2.release()
+config.set('DEFAULT','OperatorName',values['operatorName'])
+config.set('DEFAULT','OperatorID',values['operatorID'])
+config.set('DEFAULT','DefaultFolder',values['_storageFolder_'])
+with open('config.ini', 'w') as configfile:
+    config.write(configfile)
 cv2.destroyAllWindows()
 ser.write(str.encode('1')) #switch off all LEDs
 ser.close()
