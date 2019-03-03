@@ -31,7 +31,9 @@ ser.write(str.encode('0')) #start the IR 770nm on arduino
 #read in the saved configuration details for default folder, operator, etc
 config=SafeConfigParser()
 config.read('config.ini')
-
+defaultOperatorName = config[DEFAULT][OperatorName]
+defaultOperatorID = config[DEFAULT][OperatorID]
+defaultFolder = config[DEFAULT][DefaultFolder]
 
 #starting up the GUI
 menu_def=[
@@ -52,9 +54,9 @@ illumination_frame=[
 layout = [
     [sg.Menu(menu_def,tearoff=True)],
     [sg.Text('Ophthalmic Instrument Company MST', size=(40,1), justification='center',font=('Helvetica','16'))],
-    [sg.Text('Folder to store images',size=(15,1)), sg.Input(key='_storageFolder_'), sg.FolderBrowse()],
-    [sg.Text('Operator Name',size=(15,1)),sg.InputText(key='operatorName')],
-    [sg.Text('Operator ID',size=(15,1)),sg.InputText(key='operatorID')],
+    [sg.Text('Folder to store images',size=(15,1)), sg.Input(key='_storageFolder_',default_text=defaultFolder), sg.FolderBrowse()],
+    [sg.Text('Operator Name',size=(15,1)),sg.InputText(key='operatorName',default_text=defaultOperatorName)],
+    [sg.Text('Operator ID',size=(15,1)),sg.InputText(key='operatorID',default_text=defaultOperatorID)],
     [sg.VerticalSeparator()],
     [sg.Text('Patient Name',size=(15,1)),sg.InputText(key='PatientName')],
     [sg.Text('Patient Number',size=(15,1)),sg.InputText(key='PatientID')],
