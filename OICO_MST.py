@@ -42,23 +42,24 @@ video_capture_2 = cv2.VideoCapture(2)
 
 """
 #the camera for monochrome / IR images
-video_capture_1.set(3,1920)
-video_capture_1.set(4,1080)
-
+video_capture_1.set(cv2.CAP_PROP_FRAME_WIDTH,1920)
+video_capture_1.set(cv2.CAP_PROP_FRAME_HEIGHT,1080)
 
 #The camera for colour images
-video_capture_2.set(3,2592)
-video_capture_2.set(4,1944)
+video_capture_2.set(cv2.CAP_PROP_FRAME_WIDTH,2592)
+video_capture_2.set(cv2.CAP_PROP_FRAME_HEIGHT,1944)
 
 
 time.sleep(1) #give the cameras time to make the resolution setting
-video_capture_1.set(10,100) #brightness
-video_capture_1.set(14,100) #gain
-video_capture_1.set(15,1000)#exposure
+video_capture_1.set(cv2.CAP_PROP_BRIGHTNESS,100) 
+video_capture_1.set(cv2.CAP_PROP_GAIN,100) 
+video_capture_1.set(cv2.CAP_PROP_EXPOSURE,1000)
+video_capture_1.set(cv2.CAP_PROP_BACKLIGHT,1)
 
-video_capture_2.set(10,100) #brightness
-video_capture_2.set(14,100) #gain
-video_capture_2.set(15,1000)#exposure
+video_capture_2.set(cv2.CAP_PROP_BRIGHTNESS,100)
+video_capture_2.set(cv2.CAP_PROP_GAIN,100) 
+video_capture_2.set(cv2.CAP_PROP_EXPOSURE,1000)
+video_capture_2.set(cv2.CAP_PROP_BACKLIGHT,1)
 
 
 ser.write(str.encode('0')) #start the IR 770nm on arduino
