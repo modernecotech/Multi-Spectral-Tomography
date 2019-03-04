@@ -1,3 +1,5 @@
+#!/bin/python3
+
 #Main Graphical User Interface for the Multi Spectral Tomography system
 
 import PySimpleGUIQt as sg
@@ -60,7 +62,6 @@ video_capture_2.set(cv2.CAP_PROP_BRIGHTNESS,100)
 video_capture_2.set(cv2.CAP_PROP_GAIN,100) 
 video_capture_2.set(cv2.CAP_PROP_EXPOSURE,1000)
 video_capture_2.set(cv2.CAP_PROP_BACKLIGHT,1)
-
 
 ser.write(str.encode('0')) #start the IR 770nm on arduino
 
