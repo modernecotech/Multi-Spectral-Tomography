@@ -18,7 +18,7 @@ ser = serial.Serial(serialList[0])
 
 #setting the video capture devices. note that usually the '0' camera
 #is a built in webcam and thus the plugged in cams enumerate from 1 to x
-video_capture_1 = cv2.VideoCapture(1)
+video_capture_1 = cv2.VideoCapture(0)
 
 #the camera image size
 video_capture_1.set(cv2.CAP_PROP_FRAME_WIDTH,2592)
@@ -30,9 +30,9 @@ video_capture_1.set(cv2.CAP_PROP_BRIGHTNESS,100)
 video_capture_1.set(cv2.CAP_PROP_GAIN,100) 
 video_capture_1.set(cv2.CAP_PROP_EXPOSURE,1000)
 video_capture_1.set(cv2.CAP_PROP_BACKLIGHT,1)
-video_capture_1.set(cv2.CV_CAP_PROP_HUE,1)
-video_capture_1.set(cv2.CV_CAP_PROP_SATURATION,1)
-video_capture_1.set(cv2.CV_CAP_PROP_CONTRAST,1)
+video_capture_1.set(cv2.CAP_PROP_HUE,10)
+video_capture_1.set(cv2.CAP_PROP_SATURATION,10)
+video_capture_1.set(cv2.CAP_PROP_CONTRAST,10)
 
 ser.write(str.encode('0')) #start the IR 770nm on arduino
 
