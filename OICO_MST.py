@@ -10,59 +10,29 @@ from serial.tools.list_ports import comports
 import cv2
 import threading
 import time
-from configparser import SafeConfigParser
+from configparser import ConfigParser
 
 #Setting up the arduino to the first com port.
 serialList = [p.device for p in comports()]
 ser = serial.Serial(serialList[0])
 
 #setting the video capture devices. note that usually the '0' camera
-#is a built in webcam and thus the plugged in cams enumerate from 1 to 2
+#is a built in webcam and thus the plugged in cams enumerate from 1 to x
 video_capture_1 = cv2.VideoCapture(1)
-#video_capture_2 = cv2.VideoCapture(2)
 
-"""set camera parameters
-
-0. CV_CAP_PROP_POS_MSEC Current position of the video file in milliseconds.
-1. CV_CAP_PROP_POS_FRAMES 0-based index of the frame to be decoded/captured next.
-2. CV_CAP_PROP_POS_AVI_RATIO Relative position of the video file
-3. CV_CAP_PROP_FRAME_WIDTH Width of the frames in the video stream.
-4. CV_CAP_PROP_FRAME_HEIGHT Height of the frames in the video stream.
-5. CV_CAP_PROP_FPS Frame rate.
-6. CV_CAP_PROP_FOURCC 4-character code of codec.
-7. CV_CAP_PROP_FRAME_COUNT Number of frames in the video file.
-8. CV_CAP_PROP_FORMAT Format of the Mat objects returned by retrieve() .
-9. CV_CAP_PROP_MODE Backend-specific value indicating the current capture mode.
-10. CV_CAP_PROP_BRIGHTNESS Brightness of the image (only for cameras).
-11. CV_CAP_PROP_CONTRAST Contrast of the image (only for cameras).
-12. CV_CAP_PROP_SATURATION Saturation of the image (only for cameras).
-13. CV_CAP_PROP_HUE Hue of the image (only for cameras).
-14. CV_CAP_PROP_GAIN Gain of the image (only for cameras).
-15. CV_CAP_PROP_EXPOSURE Exposure (only for cameras).
-16. CV_CAP_PROP_CONVERT_RGB Boolean flags indicating whether images should be converted to RGB.
-17. CV_CAP_PROP_WHITE_BALANCE Currently unsupported
-18. CV_CAP_PROP_RECTIFICATION Rectification flag for stereo cameras (note: only supported by DC1394 v 2.x backend currently)
-
-"""
 #the camera image size
 video_capture_1.set(cv2.CAP_PROP_FRAME_WIDTH,2592)
 video_capture_1.set(cv2.CAP_PROP_FRAME_HEIGHT,1944)
 
-#The camera for colour images
-#video_capture_2.set(cv2.CAP_PROP_FRAME_WIDTH,2592)
-#video_capture_2.set(cv2.CAP_PROP_FRAME_HEIGHT,1944)
+time.sleep(1) #give the camera time to make the resolution setting
 
-
-time.sleep(1) #give the cameras time to make the resolution setting
 video_capture_1.set(cv2.CAP_PROP_BRIGHTNESS,100) 
 video_capture_1.set(cv2.CAP_PROP_GAIN,100) 
 video_capture_1.set(cv2.CAP_PROP_EXPOSURE,1000)
 video_capture_1.set(cv2.CAP_PROP_BACKLIGHT,1)
-
-#video_capture_2.set(cv2.CAP_PROP_BRIGHTNESS,100)
-#video_capture_2.set(cv2.CAP_PROP_GAIN,100) 
-#video_capture_2.set(cv2.CAP_PROP_EXPOSURE,1000)
-#video_capture_2.set(cv2.CAP_PROP_BACKLIGHT,1)
+video_capture_1.set(cv2.CV_CAP_PROP_HUE,1)
+video_capture_1.set(cv2.CV_CAP_PROP_SATURATION,1)
+video_capture_1.set(cv2.CV_CAP_PROP_CONTRAST,1)
 
 ser.write(str.encode('0')) #start the IR 770nm on arduino
 
@@ -116,12 +86,14 @@ window.Location=(0,0)
 
 
 def ImageCapture():
-    ser.write(str.encode('2')) #start flash sequence
+    #start flash sequence
+    ser.write(str.encode('2'))
 
     #filename setup
     t=time.strftime("%H%M%S")
     eyeselection = "L" if values['_LeftEye_'] is True else "R"
     filenameStart=(values['_storageFolder_'] + '/' + values['PatientName'] + values['PatientID'] + eyeselection + "_" + t)
+    
     #the image capture and saving sequence
     ret1, frame1 = video_capture_1.read()
     grayscale1 = cv2.cvtColor(frame1, cv2.COLOR_BGR2GRAY)
@@ -139,7 +111,6 @@ def ImageCapture():
 while True:
     # Capture frame-by-frame
     ret1, frame1 = video_capture_1.read() #grayscale video streamed
-#    ret2, frame2 = video_capture_2.read() #colour video only captured 
     event, values = window._ReadNonBlocking() #
     
     if (ret1):
@@ -206,7 +177,6 @@ while True:
 
 # When everything is done, release the capture
 video_capture_1.release()
-video_capture_2.release()
 config.set('DEFAULT','OperatorName',values['operatorName'])
 config.set('DEFAULT','OperatorID',values['operatorID'])
 config.set('DEFAULT','DefaultFolder',values['_storageFolder_'])
