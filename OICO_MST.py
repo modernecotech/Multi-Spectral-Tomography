@@ -8,7 +8,7 @@ import sys
 import serial
 from serial.tools.list_ports import comports
 import cv2
-import threading
+#import threading
 import time
 from configparser import ConfigParser
 
