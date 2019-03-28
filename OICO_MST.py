@@ -19,7 +19,7 @@ ser = serial.Serial(serialList[0])
 #setting the video capture devices. note that usually the '0' camera
 #is a built in webcam and thus the plugged in cams enumerate from 1 to 2
 video_capture_1 = cv2.VideoCapture(1)
-video_capture_2 = cv2.VideoCapture(2)
+#video_capture_2 = cv2.VideoCapture(2)
 
 """set camera parameters
 
@@ -44,13 +44,13 @@ video_capture_2 = cv2.VideoCapture(2)
 18. CV_CAP_PROP_RECTIFICATION Rectification flag for stereo cameras (note: only supported by DC1394 v 2.x backend currently)
 
 """
-#the camera for monochrome / IR images
-video_capture_1.set(cv2.CAP_PROP_FRAME_WIDTH,1920)
-video_capture_1.set(cv2.CAP_PROP_FRAME_HEIGHT,1080)
+#the camera image size
+video_capture_1.set(cv2.CAP_PROP_FRAME_WIDTH,2592)
+video_capture_1.set(cv2.CAP_PROP_FRAME_HEIGHT,1944)
 
 #The camera for colour images
-video_capture_2.set(cv2.CAP_PROP_FRAME_WIDTH,2592)
-video_capture_2.set(cv2.CAP_PROP_FRAME_HEIGHT,1944)
+#video_capture_2.set(cv2.CAP_PROP_FRAME_WIDTH,2592)
+#video_capture_2.set(cv2.CAP_PROP_FRAME_HEIGHT,1944)
 
 
 time.sleep(1) #give the cameras time to make the resolution setting
@@ -59,15 +59,15 @@ video_capture_1.set(cv2.CAP_PROP_GAIN,100)
 video_capture_1.set(cv2.CAP_PROP_EXPOSURE,1000)
 video_capture_1.set(cv2.CAP_PROP_BACKLIGHT,1)
 
-video_capture_2.set(cv2.CAP_PROP_BRIGHTNESS,100)
-video_capture_2.set(cv2.CAP_PROP_GAIN,100) 
-video_capture_2.set(cv2.CAP_PROP_EXPOSURE,1000)
-video_capture_2.set(cv2.CAP_PROP_BACKLIGHT,1)
+#video_capture_2.set(cv2.CAP_PROP_BRIGHTNESS,100)
+#video_capture_2.set(cv2.CAP_PROP_GAIN,100) 
+#video_capture_2.set(cv2.CAP_PROP_EXPOSURE,1000)
+#video_capture_2.set(cv2.CAP_PROP_BACKLIGHT,1)
 
 ser.write(str.encode('0')) #start the IR 770nm on arduino
 
 #read in the saved configuration details for default folder, operator, etc
-config=SafeConfigParser()
+config=ConfigParser()
 config.read('config.ini')
 defaultOperatorName = config['DEFAULT']['OperatorName']
 defaultOperatorID = config['DEFAULT']['OperatorID']
@@ -117,27 +117,29 @@ window.Location=(0,0)
 
 def ImageCapture():
     ser.write(str.encode('2')) #start flash sequence
+
+    #filename setup
     t=time.strftime("%H%M%S")
     eyeselection = "L" if values['_LeftEye_'] is True else "R"
     filenameStart=(values['_storageFolder_'] + '/' + values['PatientName'] + values['PatientID'] + eyeselection + "_" + t)
+    #the image capture and saving sequence
     ret1, frame1 = video_capture_1.read()
     grayscale1 = cv2.cvtColor(frame1, cv2.COLOR_BGR2GRAY)
-    cv2.imwrite(filenameStart + '770.png',grayscale1)
-    ret1, frame1 = video_capture_1.read()
-    grayscale1 = cv2.cvtColor(frame1, cv2.COLOR_BGR2GRAY)
-    cv2.imwrite(filenameStart + '850nm.png',grayscale1)
-    ret1, frame1 = video_capture_1.read()
-    grayscale1 = cv2.cvtColor(frame1, cv2.COLOR_BGR2GRAY)
-    cv2.imwrite(filenameStart + '810nm.png',grayscale1)
-    ret2, frame2 = video_capture_2.read()
-    cv2.imwrite(filenameStart + '520nm.png',frame2)    
-
+    cv2.imwrite(filenameStart + '_770nm.png',grayscale1)
+    ret1, frame2 = video_capture_1.read()
+    grayscale2 = cv2.cvtColor(frame2, cv2.COLOR_BGR2GRAY)
+    cv2.imwrite(filenameStart + '_850nm.png',grayscale2)
+    ret1, frame3 = video_capture_1.read()
+    grayscale3 = cv2.cvtColor(frame3, cv2.COLOR_BGR2GRAY)
+    cv2.imwrite(filenameStart + '_810nm.png',grayscale3)
+    ret1, frame4 = video_capture_1.read()
+    cv2.imwrite(filenameStart + '_520nm.png',frame4)    
 
 
 while True:
     # Capture frame-by-frame
     ret1, frame1 = video_capture_1.read() #grayscale video streamed
-    ret2, frame2 = video_capture_2.read() #colour video only captured 
+#    ret2, frame2 = video_capture_2.read() #colour video only captured 
     event, values = window._ReadNonBlocking() #
     
     if (ret1):
