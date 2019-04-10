@@ -1,7 +1,7 @@
 #!/bin/python3
 
 #Main Graphical User Interface for the Multi Spectral Tomography system
-# use pyinstaller -wF your_program.py to make an exe
+# use auto-py-to-exe to make an exe.
 
 import PySimpleGUIQt as sg
 import sys
