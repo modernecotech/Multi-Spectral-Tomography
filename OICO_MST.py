@@ -6,15 +6,15 @@
 import PySimpleGUIQt as sg
 import sys
 import serial
-from serial.tools.list_ports import comports
+#from serial.tools.list_ports import comports
 import cv2
 #import threading
 import time
 from configparser import ConfigParser
 
 #Setting up the arduino to the first com port.
-serialList = [p.device for p in comports()]
-ser = serial.Serial(serialList[0])
+#serialList = [p.device for p in comports()]
+#ser = serial.Serial(serialList[0])
 
 #setting the video capture devices. note that usually the '0' camera
 #is a built in webcam and thus the plugged in cams enumerate from 1 to x
@@ -34,7 +34,7 @@ video_capture_1.set(cv2.CAP_PROP_HUE,10)
 video_capture_1.set(cv2.CAP_PROP_SATURATION,10)
 video_capture_1.set(cv2.CAP_PROP_CONTRAST,10)
 
-ser.write(str.encode('0')) #start the IR 770nm on arduino
+#ser.write(str.encode('0')) #start the IR 770nm on arduino
 
 #read in the saved configuration details for default folder, operator, etc
 config=ConfigParser()
@@ -87,7 +87,7 @@ window.Location=(0,0)
 
 def ImageCapture():
     #start flash sequence
-    ser.write(str.encode('2'))
+ #   ser.write(str.encode('2'))
 
     #filename setup
     t=time.strftime("%H%M%S")
@@ -136,43 +136,43 @@ while True:
         ImageCapture()
     
     if values['ext'] == '1':
-        ser.write(str.encode("m"))
+#       ser.write(str.encode("m"))
 
     if values['ext'] == '2':
-        ser.write(str.encode("a"))
+#       ser.write(str.encode("a"))
 
     if values['ext'] == '3':
-        ser.write(str.encode("b"))
+#        ser.write(str.encode("b"))
 
     if values['ext'] == '4':
-        ser.write(str.encode("c"))
+#        ser.write(str.encode("c"))
 
     if values['ext'] == '5':
-        ser.write(str.encode("d"))
+#        ser.write(str.encode("d"))
 
     if values['ext'] == '6':
-        ser.write(str.encode("e"))
+#        ser.write(str.encode("e"))
 
     if values['ext'] == '7':
-        ser.write(str.encode("f"))
+#        ser.write(str.encode("f"))
 
     if values['ext'] == '8':
-        ser.write(str.encode("g"))
+#        ser.write(str.encode("g"))
 
     if values['ext'] == '9':
-        ser.write(str.encode("h"))
+#        ser.write(str.encode("h"))
 
     if values['ext'] == '10':
-        ser.write(str.encode("i"))
+#        ser.write(str.encode("i"))
 
     if values['ext'] == '11':
-        ser.write(str.encode("j"))
+#        ser.write(str.encode("j"))
 
     if values['ext'] == '12':
-        ser.write(str.encode("k"))
+#        ser.write(str.encode("k"))
         
     if values['ext'] == '13':
-        ser.write(str.encode("l"))
+#        ser.write(str.encode("l"))
 
 
 # When everything is done, release the capture
@@ -183,6 +183,6 @@ config.set('DEFAULT','DefaultFolder',values['_storageFolder_'])
 with open('config.ini', 'w') as configfile:
     config.write(configfile)
 cv2.destroyAllWindows()
-ser.write(str.encode('1')) #switch off all LEDs
-ser.close()
+#ser.write(str.encode('1')) #switch off all LEDs
+#ser.close()
 window.Close()
