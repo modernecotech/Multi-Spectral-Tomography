@@ -6,26 +6,26 @@
 import PySimpleGUIQt as sg
 import sys
 import serial
-#from serial.tools.list_ports import comports
+from serial.tools.list_ports import comports
 import cv2
 #import threading
 import time
 from configparser import ConfigParser
 
 #Setting up the arduino to the first com port.
-#serialList = [p.device for p in comports()]
-#ser = serial.Serial(serialList[0])
+serialList = [p.device for p in comports()]
+ser = serial.Serial(serialList[0])
 
 #setting the video capture devices. note that usually the '0' camera
 #is a built in webcam and thus the plugged in cams enumerate from 1 to x
-video_capture_1 = cv2.VideoCapture(0)
+#using CAP_DSHOW on windows 10 enables high performance directshow camera control.
+video_capture_1 = cv2.VideoCapture(cv2.CAP_DSHOW)
 
 #the camera image size
 video_capture_1.set(cv2.CAP_PROP_FRAME_WIDTH,2592)
 video_capture_1.set(cv2.CAP_PROP_FRAME_HEIGHT,1944)
 
 time.sleep(1) #give the camera time to make the resolution setting
-
 video_capture_1.set(cv2.CAP_PROP_BRIGHTNESS,100) 
 video_capture_1.set(cv2.CAP_PROP_GAIN,100) 
 video_capture_1.set(cv2.CAP_PROP_EXPOSURE,1000)
@@ -97,21 +97,21 @@ def ImageCapture():
     #the image capture and saving sequence
     ret1, frame1 = video_capture_1.read()
     grayscale1 = cv2.cvtColor(frame1, cv2.COLOR_BGR2GRAY)
-    cv2.imwrite(filenameStart + '_770nm.png',grayscale1)
+    cv2.imwrite(filenameStart + '_780nm.png',grayscale1)
     ret1, frame2 = video_capture_1.read()
     grayscale2 = cv2.cvtColor(frame2, cv2.COLOR_BGR2GRAY)
     cv2.imwrite(filenameStart + '_850nm.png',grayscale2)
     ret1, frame3 = video_capture_1.read()
     grayscale3 = cv2.cvtColor(frame3, cv2.COLOR_BGR2GRAY)
-    cv2.imwrite(filenameStart + '_810nm.png',grayscale3)
+    cv2.imwrite(filenameStart + '_940nm.png',grayscale3)
     ret1, frame4 = video_capture_1.read()
-    cv2.imwrite(filenameStart + '_520nm.png',frame4)    
+    cv2.imwrite(filenameStart + '_560nm.png',frame4)    
 
 
 while True:
     # Capture frame-by-frame
     ret1, frame1 = video_capture_1.read() #grayscale video streamed
-    event, values = window._ReadNonBlocking() #
+    event, values = window.Read(timeout=10) #
     
     if (ret1):
         # Display the resulting frame
@@ -136,43 +136,45 @@ while True:
         ImageCapture()
     
     if values['ext'] == '1':
-#       ser.write(str.encode("m"))
+       print("values 1")
+       ser.write(str.encode("m"))
 
     if values['ext'] == '2':
-#       ser.write(str.encode("a"))
+       print("values 2")
+       ser.write(str.encode("a"))
 
     if values['ext'] == '3':
-#        ser.write(str.encode("b"))
+        ser.write(str.encode("b"))
 
     if values['ext'] == '4':
-#        ser.write(str.encode("c"))
+        ser.write(str.encode("c"))
 
     if values['ext'] == '5':
-#        ser.write(str.encode("d"))
+        ser.write(str.encode("d"))
 
     if values['ext'] == '6':
-#        ser.write(str.encode("e"))
+        ser.write(str.encode("e"))
 
     if values['ext'] == '7':
-#        ser.write(str.encode("f"))
+        ser.write(str.encode("f"))
 
     if values['ext'] == '8':
-#        ser.write(str.encode("g"))
+        ser.write(str.encode("g"))
 
     if values['ext'] == '9':
-#        ser.write(str.encode("h"))
+        ser.write(str.encode("h"))
 
     if values['ext'] == '10':
-#        ser.write(str.encode("i"))
+        ser.write(str.encode("i"))
 
     if values['ext'] == '11':
-#        ser.write(str.encode("j"))
+        ser.write(str.encode("j"))
 
     if values['ext'] == '12':
-#        ser.write(str.encode("k"))
+        ser.write(str.encode("k"))
         
     if values['ext'] == '13':
-#        ser.write(str.encode("l"))
+        ser.write(str.encode("l"))
 
 
 # When everything is done, release the capture
