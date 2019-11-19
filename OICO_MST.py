@@ -19,7 +19,7 @@ ser = serial.Serial(serialList[0])
 #setting the video capture devices. note that usually the '0' camera
 #is a built in webcam and thus the plugged in cams enumerate from 1 to x
 #using CAP_DSHOW on windows 10 enables high performance directshow camera control.
-video_capture_1 = cv2.VideoCapture(cv2.CAP_DSHOW)
+video_capture_1 = cv2.VideoCapture(1  + cv2.CAP_OPENCV_MJPEG) #cv2.CAP_DSHOW
 
 #the camera image size
 video_capture_1.set(cv2.CAP_PROP_FRAME_WIDTH,2592)
@@ -34,7 +34,7 @@ video_capture_1.set(cv2.CAP_PROP_HUE,10)
 video_capture_1.set(cv2.CAP_PROP_SATURATION,10)
 video_capture_1.set(cv2.CAP_PROP_CONTRAST,10)
 
-#ser.write(str.encode('0')) #start the IR 770nm on arduino
+#ser.write(str.encode('2')) #start the IR 770nm on arduino
 
 #read in the saved configuration details for default folder, operator, etc
 config=ConfigParser()
@@ -75,25 +75,24 @@ layout = [
     [sg.Text("External Fixation LEDs")],
     [sg.Dial((1,13),key="ext",enable_events=True,size=(150,150))],
     [sg.Text("OFF")],
-    [sg.Button(button_text='Capture Image')],
+    [sg.Button(button_text='Capture Image'),sg.Text(text=" ", size=(15,1),key="_ImageCaptureKeyText_")],
     [sg.VerticalSeparator()],
     [sg.Quit()]
 ]
 
-window = sg.Window('OICO MST').Layout(layout)
+window = sg.Window('OICO MST', return_keyboard_events=True).Layout(layout)
 window.Location=(0,0)
-
-
 
 def ImageCapture():
     #start flash sequence
- #   ser.write(str.encode('2'))
+ #   ser.write(str.encode('5'))
 
     #filename setup
+    window.Element('_ImageCaptureKeyText_').Update("Image Captured")
+    window.VisibilityChanged()
     t=time.strftime("%H%M%S")
     eyeselection = "L" if values['_LeftEye_'] is True else "R"
     filenameStart=(values['_storageFolder_'] + '/' + values['PatientName'] + values['PatientID'] + eyeselection + "_" + t)
-    
     #the image capture and saving sequence
     ret1, frame1 = video_capture_1.read()
     grayscale1 = cv2.cvtColor(frame1, cv2.COLOR_BGR2GRAY)
@@ -105,7 +104,14 @@ def ImageCapture():
     grayscale3 = cv2.cvtColor(frame3, cv2.COLOR_BGR2GRAY)
     cv2.imwrite(filenameStart + '_940nm.png',grayscale3)
     ret1, frame4 = video_capture_1.read()
-    cv2.imwrite(filenameStart + '_560nm.png',frame4)    
+    cv2.imwrite(filenameStart + '_560nm.png',frame4)
+    nextThing()
+
+
+def nextThing():
+    time.sleep(1)
+    window.Element('_ImageCaptureKeyText_').Update(" ")
+    window.VisibilityChanged()
 
 
 while True:
@@ -117,7 +123,7 @@ while True:
         # Display the resulting frame
         grayscale1 = cv2.cvtColor(frame1, cv2.COLOR_BGR2GRAY)
         cv2.namedWindow("Cam 1", cv2.WINDOW_NORMAL)
-        cv2.resizeWindow("Cam 1", 1000,600)
+        cv2.resizeWindow("Cam 1", 1920,1080)
         cv2.imshow('Cam 1', grayscale1)
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
@@ -135,9 +141,14 @@ while True:
     if event == 'Capture Image':
         ImageCapture()
     
-    if values['ext'] == '1':
-       print("values 1")
+    if event == 'special 16777330':
+        print(event)
+        ImageCapture()
+    
+    if values['ext'] == 0x40:
+       print("volume up key pressed")
        ser.write(str.encode("m"))
+       ImageCapture()
 
     if values['ext'] == '2':
        print("values 2")
@@ -175,6 +186,8 @@ while True:
         
     if values['ext'] == '13':
         ser.write(str.encode("l"))
+    else:
+        print(event + " from the else")
 
 
 # When everything is done, release the capture
